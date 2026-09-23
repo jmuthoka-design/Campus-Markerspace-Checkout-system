@@ -289,7 +289,7 @@ def main():
             except Exception as e:
                 print(f"\nSomething unexpected went wrong: {e}")
 
-        .
+        
         print()
 
 
