@@ -23,7 +23,6 @@ class MakerSpaceService:
     def __init__(self, db_name="makerspace.db"):
         self.db = Database(db_name)
 
-    #  small private helpers: turn a DB row into a model object 
 
     def _row_to_member(self, row):
         return Member(row["id"], row["name"], row["email"],
@@ -43,8 +42,8 @@ class MakerSpaceService:
     def register_member(self, name, email, phone):
         name = validate_person_name(name, field_label="Name")
         email = validate_email(email)
-        phone = validate_phone(phone)
-
+        phone = validate_phone(phone, allow_blank=False)
+        
         existing = self.db.fetch_one(
             "SELECT id FROM members WHERE email = ?", (email,))
         if existing:
@@ -87,6 +86,8 @@ class MakerSpaceService:
         if not member:
             raise ValueError(f"No member with id {member_id}.")
 
+        # Block on ANY loan (not just active ones). Even a returned loan
+       
         any_loan = self.db.fetch_one(
             "SELECT id FROM loans WHERE member_id = ?", (member_id,))
         if any_loan:
@@ -211,11 +212,15 @@ class MakerSpaceService:
         return self.get_loan(loan_id)
 
     def get_loan(self, loan_id):
-        row = self.db.fetch_one("SELECT * FROM loans WHERE id = ?", (loan_id,))
+        row = self.db.fetch_one("SELECT * FROM loans WHERE id = ?",
+                                 (loan_id,))
         return self._row_to_loan(row) if row else None
 
     # ================= REPORTS =================
     # Each report returns a list of sqlite3.Row objects that already
+    # join member/equipment names in, so main.py can just print them
+    # without extra lookups.
+
     def report_currently_borrowed(self):
         return self.db.fetch_all("""
             SELECT loans.id AS loan_id, members.name AS member_name,
@@ -250,4 +255,3 @@ class MakerSpaceService:
             WHERE loans.member_id = ?
             ORDER BY loans.checkout_date DESC
         """, (member_id,))
-
