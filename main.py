@@ -2,9 +2,6 @@
 main.py
 -------
 Entry point for the Campus MakerSpace Checkout System.
-
-This file's ONLY job is: show a menu, read what the user typed, and
-call the matching method on MakerSpaceService. 
 """
 
 from services import MakerSpaceService
@@ -24,26 +21,25 @@ from validators import (
 # ---------------------------------------------------------------
 
 def prompt_text(label, allow_blank=False):
-    """Ask for plain text with no format rules  just "not blank"."""
+    """Ask for plain text with no format rules -- just "not blank"."""
     while True:
         value = input(f"{label}: ").strip()
         if value or allow_blank:
             return value
-        print("This can't be blank. Please try again.")
+        print("  -> This can't be blank. Please try again.")
 
 
-def prompt_valid(label, validator, allow_blank=False, **validator_kwargs):
+def prompt_valid(label, validator, skip_if_blank=False, **validator_kwargs):
     """Keep asking until `validator` accepts what was typed.
-
     """
     while True:
         raw = input(f"{label}: ")
-        if allow_blank and not raw.strip():
+        if skip_if_blank and not raw.strip():
             return ""
         try:
             return validator(raw, **validator_kwargs)
         except ValueError as e:
-            print(f"{e} Please try again.")
+            print(f"  -> {e} Please try again.")
 
 
 def prompt_int(label):
@@ -52,7 +48,7 @@ def prompt_int(label):
         try:
             return int(raw)
         except ValueError:
-            print(f"'{raw}' isn't a whole number. Please try again.")
+            print(f"  -> '{raw}' isn't a whole number. Please try again.")
 
 
 # ---------------------------------------------------------------
@@ -61,9 +57,10 @@ def prompt_int(label):
 
 def do_register_member(service):
     print("\n-- Register New Member --")
-    name = prompt_valid("Full name", validate_person_name,field_label="Name")
+    name = prompt_valid("Full name", validate_person_name,
+                         field_label="Name")
     email = prompt_valid("Email", validate_email)
-    phone = prompt_valid("Phone number", validate_phone, allow_blank=True)
+    phone = prompt_valid("Phone number",validate_phone, allow_blank=False)
     member = service.register_member(name, email, phone)
     print(f"Registered: {member}")
 
@@ -81,10 +78,13 @@ def do_update_member(service):
     print("\n-- Update Member --")
     member_id = prompt_int("Member ID to update")
     print("Leave a field blank to keep its current value.")
-    name = prompt_valid("New name", validate_person_name,allow_blank=True, field_label="Name")
-    email = prompt_valid("New email", validate_email, allow_blank=True)
-    phone = prompt_valid("New phone (e.g. 57123456 or +230-57-123-456)",validate_phone, allow_blank=True)
-    member = service.update_member(member_id, name or None,email or None, phone or None)
+    name = prompt_valid("New name", validate_person_name,
+                         skip_if_blank=True, field_label="Name")
+    email = prompt_valid("New email", validate_email, skip_if_blank=True)
+    phone = prompt_valid("New phone (e.g. 57123456 or +230-57-123-456)",
+                          validate_phone, skip_if_blank=True)
+    member = service.update_member(member_id, name or None,
+                                    email or None, phone or None)
     print(f"Updated: {member}")
 
 
@@ -111,7 +111,7 @@ def do_search_members(service):
 
 def do_register_equipment(service):
     print("\n-- Register New Equipment --")
-    name = prompt_valid("Equipment name", validate_equipment_text, field_label="Equipment name")
+    name = prompt_valid("Equipment name", validate_equipment_text,field_label="Equipment name")
     category = prompt_valid("Category (e.g. 3D Printing, Electronics)",validate_equipment_text, field_label="Category")
     item = service.register_equipment(name, category)
     print(f"Registered: {item}")
@@ -130,9 +130,12 @@ def do_update_equipment(service):
     print("\n-- Update Equipment --")
     equipment_id = prompt_int("Equipment ID to update")
     print("Leave a field blank to keep its current value.")
-    name = prompt_valid("New name", validate_equipment_text, allow_blank=True, field_label="Equipment name")
-    category = prompt_valid("New category", validate_equipment_text,allow_blank=True, field_label="Category")
-    item = service.update_equipment(equipment_id, name or None,category or None)
+    name = prompt_valid("New name", validate_equipment_text,
+                         skip_if_blank=True, field_label="Equipment name")
+    category = prompt_valid("New category", validate_equipment_text,
+                             skip_if_blank=True, field_label="Category")
+    item = service.update_equipment(equipment_id, name or None,
+                                     category or None)
     print(f"Updated: {item}")
 
 
@@ -244,7 +247,6 @@ MENU = """
 """
 
 ACTIONS = {
-    
     "1": do_register_member,
     "2": do_list_members,
     "3": do_update_member,
@@ -282,14 +284,15 @@ def main():
             continue
 
         
-            try:
-                action(service)
-            except ValueError as e:
-                print(f"\nCouldn't do that: {e}")
-            except Exception as e:
-                print(f"\nSomething unexpected went wrong: {e}")
+        try:
+            action(service)
+        except ValueError as e:
+            print(f"\nCouldn't do that: {e}")
+        except Exception as e:
+            print(f"\nSomething unexpected went wrong: {e}")
 
-        
+        # No "press Enter to continue" -- the menu just reprints
+        # straight away so the user can pick their next option.
         print()
 
 
