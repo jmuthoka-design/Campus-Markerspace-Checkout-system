@@ -1,17 +1,9 @@
 """
 models.py
 ---------
-This file has no SQL in it at all. That's on purpose.
-
 These three classes (Member, Equipment, Loan) describe the *real-world
-things* the makerspace deals with, and the behaviour that belongs to
-each one. database.py knows how to save/load rows; services.py is the
+things* the makerspace deals with, services.py is the
 one that hands rows from the database to these classes and back again.
-
-Think of it like a library membership card: the card itself doesn't
-know how the library's filing cabinet works, it just knows what a
-member IS (a name, an email...) and what a member can DO (borrow
-something).
 """
 
 from datetime import date
@@ -87,6 +79,6 @@ class Loan:
 
     def __str__(self):
         flag = "  ** OVERDUE **" if self.is_overdue() else ""
-        return (f"Loan #{self.id} | member {self.member_id} -> "
+        return (f"Loan #{self.id} | member {self.member_id} > "
                 f"equipment {self.equipment_id} | due {self.due_date} "
                 f"| {self.status}{flag}")
