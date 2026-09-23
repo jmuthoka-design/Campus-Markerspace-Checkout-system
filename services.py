@@ -92,8 +92,8 @@ class MakerSpaceService:
             "SELECT id FROM loans WHERE member_id = ?", (member_id,))
         if any_loan:
             raise ValueError(
-                "Can't delete this member -- they have loan history on "
-                "record (deleting them would break those loan records).")
+                "Can't delete this member they have loan history on "
+                "record")
 
         self.db.execute("DELETE FROM members WHERE id = ?", (member_id,))
 
@@ -146,13 +146,13 @@ class MakerSpaceService:
             raise ValueError(f"No equipment with id {equipment_id}.")
         if item.status == "borrowed":
             raise ValueError(
-                "Can't delete this item -- it's currently checked out.")
+                "Can't delete this item it's currently checked out.")
 
         any_loan = self.db.fetch_one(
             "SELECT id FROM loans WHERE equipment_id = ?", (equipment_id,))
         if any_loan:
             raise ValueError(
-                "Can't delete this item -- it has loan history on record "
+                "Can't delete this item it has loan history on record "
                 "(deleting it would break those loan records).")
 
         self.db.execute("DELETE FROM equipment WHERE id = ?", (equipment_id,))
