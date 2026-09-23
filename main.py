@@ -4,12 +4,7 @@ main.py
 Entry point for the Campus MakerSpace Checkout System.
 
 This file's ONLY job is: show a menu, read what the user typed, and
-call the matching method on MakerSpaceService. It doesn't touch SQL
-and it doesn't decide what counts as a "valid" name or email on its
-own -- it borrows that logic from validators.py, the same functions
-services.py double-checks with before touching the database.
-
-Run it with:  python3 main.py
+call the matching method on MakerSpaceService. 
 """
 
 from services import MakerSpaceService
@@ -29,22 +24,17 @@ from validators import (
 # ---------------------------------------------------------------
 
 def prompt_text(label, allow_blank=False):
-    """Ask for plain text with no format rules -- just "not blank"."""
+    """Ask for plain text with no format rules  just "not blank"."""
     while True:
         value = input(f"{label}: ").strip()
         if value or allow_blank:
             return value
-        print("  -> This can't be blank. Please try again.")
+        print("This can't be blank. Please try again.")
 
 
 def prompt_valid(label, validator, allow_blank=False, **validator_kwargs):
     """Keep asking until `validator` accepts what was typed.
 
-    `validator` is one of the functions in validators.py: it either
-    returns a cleaned-up value, or raises ValueError with a message
-    that's safe to print straight to the user. This is what makes
-    name/email/phone validation happen immediately, right at the
-    prompt, instead of only after the user finishes the whole form.
     """
     while True:
         raw = input(f"{label}: ")
@@ -53,7 +43,7 @@ def prompt_valid(label, validator, allow_blank=False, **validator_kwargs):
         try:
             return validator(raw, **validator_kwargs)
         except ValueError as e:
-            print(f"  -> {e} Please try again.")
+            print(f"{e} Please try again.")
 
 
 def prompt_int(label):
@@ -62,7 +52,7 @@ def prompt_int(label):
         try:
             return int(raw)
         except ValueError:
-            print(f"  -> '{raw}' isn't a whole number. Please try again.")
+            print(f"'{raw}' isn't a whole number. Please try again.")
 
 
 # ---------------------------------------------------------------
@@ -71,11 +61,9 @@ def prompt_int(label):
 
 def do_register_member(service):
     print("\n-- Register New Member --")
-    name = prompt_valid("Full name", validate_person_name,
-                         field_label="Name")
+    name = prompt_valid("Full name", validate_person_name,field_label="Name")
     email = prompt_valid("Email", validate_email)
-    phone = prompt_valid("Phone number (digits only, leave blank to skip)",
-                          validate_phone, allow_blank=True)
+    phone = prompt_valid("Phone number (e.g. 57123456 or +230-57-123-456 , ""leave blank to skip)", validate_phone, allow_blank=True)
     member = service.register_member(name, email, phone)
     print(f"Registered: {member}")
 
@@ -93,13 +81,10 @@ def do_update_member(service):
     print("\n-- Update Member --")
     member_id = prompt_int("Member ID to update")
     print("Leave a field blank to keep its current value.")
-    name = prompt_valid("New name", validate_person_name,
-                         allow_blank=True, field_label="Name")
+    name = prompt_valid("New name", validate_person_name,allow_blank=True, field_label="Name")
     email = prompt_valid("New email", validate_email, allow_blank=True)
-    phone = prompt_valid("New phone (digits only)", validate_phone,
-                          allow_blank=True)
-    member = service.update_member(member_id, name or None,
-                                    email or None, phone or None)
+    phone = prompt_valid("New phone (e.g. 57123456 or +230-57-123-456)",validate_phone, allow_blank=True)
+    member = service.update_member(member_id, name or None,email or None, phone or None)
     print(f"Updated: {member}")
 
 
@@ -126,10 +111,8 @@ def do_search_members(service):
 
 def do_register_equipment(service):
     print("\n-- Register New Equipment --")
-    name = prompt_valid("Equipment name", validate_equipment_text,
-                         field_label="Equipment name")
-    category = prompt_valid("Category (e.g. 3D Printing, Electronics)",
-                             validate_equipment_text, field_label="Category")
+    name = prompt_valid("Equipment name", validate_equipment_text, field_label="Equipment name")
+    category = prompt_valid("Category (e.g. 3D Printing, Electronics)",validate_equipment_text, field_label="Category")
     item = service.register_equipment(name, category)
     print(f"Registered: {item}")
 
@@ -147,12 +130,9 @@ def do_update_equipment(service):
     print("\n-- Update Equipment --")
     equipment_id = prompt_int("Equipment ID to update")
     print("Leave a field blank to keep its current value.")
-    name = prompt_valid("New name", validate_equipment_text,
-                         allow_blank=True, field_label="Equipment name")
-    category = prompt_valid("New category", validate_equipment_text,
-                             allow_blank=True, field_label="Category")
-    item = service.update_equipment(equipment_id, name or None,
-                                     category or None)
+    name = prompt_valid("New name", validate_equipment_text, allow_blank=True, field_label="Equipment name")
+    category = prompt_valid("New category", validate_equipment_text,allow_blank=True, field_label="Category")
+    item = service.update_equipment(equipment_id, name or None,category or None)
     print(f"Updated: {item}")
 
 
@@ -300,11 +280,7 @@ def main():
                   "from the menu.")
             continue
 
-        # Every action can fail in an "expected" way (bad id, missing
-        # member, invalid name/email, double-borrow...) -- those come
-        # back as ValueError from services.py/validators.py and we just
-        # show the message. Anything else is an unexpected bug, and we
-        # still catch it so the whole program doesn't crash mid-demo.
+        
         try:
             action(service)
         except ValueError as e:
