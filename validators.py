@@ -49,9 +49,7 @@ def validate_person_name(raw, field_label="Name"):
         raise ValueError(f"{field_label} can't be blank.")
     if not _PERSON_NAME_RE.match(value):
         raise ValueError(
-            f"{field_label} should only contain letters, spaces, "
-            f"hyphens or apostrophes (e.g. 'Jean-Paul' or \"O'Brien\") "
-            f"-- no numbers or other symbols.")
+            f"{field_label} should only contain letters, spaces")
     return value
 
 
@@ -61,9 +59,7 @@ def validate_equipment_text(raw, field_label="This field"):
         raise ValueError(f"{field_label} can't be blank.")
     if not _EQUIPMENT_TEXT_RE.match(value):
         raise ValueError(
-            f"{field_label} should only contain letters, numbers, "
-            f"spaces, or basic punctuation (- ' . / ()) -- no other "
-            f"symbols.")
+            f"{field_label} should only contain letters and numbers")
     if not any(ch.isalpha() for ch in value):
         raise ValueError(
             f"{field_label} needs at least one letter in it, not just "
@@ -76,10 +72,7 @@ def validate_email(raw):
     if not value:
         raise ValueError("Email can't be blank.")
     if not _EMAIL_RE.match(value):
-        raise ValueError(
-            "That doesn't look like a valid email (expected something "
-            "like name123@example.com -- letters and numbers are both "
-            "fine).")
+        raise ValueError("Enter a valid email")
     return value
 
 
@@ -91,11 +84,7 @@ def validate_phone(raw, allow_blank=True):
         raise ValueError("Phone number can't be blank.")
 
     if not _PHONE_RE.match(value):
-        raise ValueError(
-            "Phone number should be digits only, with an optional "
-            "leading + and optional dashes between groups -- e.g. "
-            "57123456, +23057123456, or +230-57-123-456 are all fine, "
-            "but no spaces or parentheses.")
+        raise ValueError("Phone number should be digits only, with an optional ")
 
     # Strip the + and - out and count what's left  that's the actual
     # number of digits someone typed, regardless of how they grouped them.
