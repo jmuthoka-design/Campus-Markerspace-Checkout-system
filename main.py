@@ -192,7 +192,7 @@ def do_report_overdue(service):
     print("\n-- Report: Overdue Loans --")
     rows = service.report_overdue_loans()
     if not rows:
-        print("No overdue loans. Nice.")
+        print("No overdue loans")
     for r in rows:
         print(f"Loan #{r['loan_id']}: {r['equipment_name']} -> "
               f"{r['member_name']} (was due {r['due_date']})")
