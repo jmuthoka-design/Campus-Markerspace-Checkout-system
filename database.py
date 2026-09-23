@@ -1,23 +1,20 @@
 """
 database.py
 ------------
-The main.py and services.py  just ask this file for
-data, and this file goes and gets it from makerspace.db. If we ever
-wanted to swap SQLite for another database, this is the only file we'd
-have to change.
-
-
+Everything related to SQLite lives in this file, and only this file.
 """
 
 import sqlite3
 
 
 class Database:
-    """Wraps a SQLite connection and creates and holds our three tables."""
+    """Wraps a SQLite connection and creates/holds our three tables."""
 
     def __init__(self, db_name="makerspace.db"):
-        
+       
         self.connection = sqlite3.connect(db_name)
+
+        
         self.connection.row_factory = sqlite3.Row
 
         # Lets SQLite enforce that a loan's member_id/equipment_id must
@@ -29,6 +26,8 @@ class Database:
     def create_tables(self):
         """Create the three tables if they don't already exist.
 
+        Using 'IF NOT EXISTS' means this is safe to call every time the
+        program starts -- it won't wipe existing data.
         """
         cursor = self.connection.cursor()
 
@@ -69,8 +68,6 @@ class Database:
 
         self.connection.commit()
 
-    
-    
     # Everything above sets the tables up once. Everything below is
     # what the rest of the app actually calls, over and over, while
     # it's running.
