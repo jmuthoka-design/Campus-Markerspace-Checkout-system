@@ -43,10 +43,15 @@ borrow/return.
 
 
 main.py         # Menu loop  reads user input, calls services.py, prints results
-services.py     # Business rules borrow/return validation, reports, etc.
+
+services.py     # Business rules that is borrow/return validation, reports
+
 models.py       # Member, Equipment, Loan classes (what these things ARE)
+
 database.py     # SQLite connection, schema, and generic query helpers
+
 validators.py   # Format rules for names, emails, and phone numbers
+
 README.md       # You are here
 
 
