@@ -81,10 +81,8 @@ def do_update_member(service):
     name = prompt_valid("New name", validate_person_name,
                          skip_if_blank=True, field_label="Name")
     email = prompt_valid("New email", validate_email, skip_if_blank=True)
-    phone = prompt_valid("New phone (e.g. 57123456 or +230-57-123-456)",
-                          validate_phone, skip_if_blank=True)
-    member = service.update_member(member_id, name or None,
-                                    email or None, phone or None)
+    phone = prompt_valid("New phone" ,validate_phone, skip_if_blank=True)
+    member = service.update_member(member_id, name or None,email or None, phone or None)
     print(f"Updated: {member}")
 
 
