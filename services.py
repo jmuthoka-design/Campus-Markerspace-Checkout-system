@@ -4,27 +4,6 @@ services.py
 This is the "middle layer" that connects the menu (main.py) to the
 database (database.py), using the classes from models.py along the
 way.
-
-Why have this layer at all? Two reasons:
-1. main.py stays about *menus and printing*, not SQL or business rules.
-2. All the "is this allowed?" rules (can't borrow something that's
-   already out, can't delete a member who still has a loan, names and
-   emails have to look like real names and emails...) live in ONE
-   place, so they can't accidentally be applied differently in two
-   different menu options.
-
-Every public method here either:
-  - returns a model object / list of model objects on success, or
-  - raises a ValueError with a message that's safe to show the user
-    directly (main.py just does print(f"Error: {e}")).
-
-Note that the validators (validate_person_name, validate_email, etc.)
-get called here TOO, even though main.py already calls them while
-prompting. That's not duplication for no reason -- main.py's checks
-give the user a friendly "try again" loop, but services.py's checks
-are the ones that actually protect the database. Anything that ever
-calls these methods without going through main.py's prompts (a test,
-a future web version, anything) still can't sneak bad data in.
 """
 
 from datetime import date, timedelta
@@ -44,7 +23,7 @@ class MakerSpaceService:
     def __init__(self, db_name="makerspace.db"):
         self.db = Database(db_name)
 
-    # ---- small private helpers: turn a DB row into a model object --
+    #  small private helpers: turn a DB row into a model object 
 
     def _row_to_member(self, row):
         return Member(row["id"], row["name"], row["email"],
@@ -64,7 +43,7 @@ class MakerSpaceService:
     def register_member(self, name, email, phone):
         name = validate_person_name(name, field_label="Name")
         email = validate_email(email)
-        phone = validate_phone(phone, allow_blank=True)
+        phone = validate_phone(phone)
 
         existing = self.db.fetch_one(
             "SELECT id FROM members WHERE email = ?", (email,))
@@ -108,10 +87,6 @@ class MakerSpaceService:
         if not member:
             raise ValueError(f"No member with id {member_id}.")
 
-        # Block on ANY loan (not just active ones). Even a returned loan
-        # is a row in the loans table pointing at this member_id -- SQLite
-        # would refuse the delete anyway because of the FOREIGN KEY, so we
-        # check first and give a friendly message instead of a crash.
         any_loan = self.db.fetch_one(
             "SELECT id FROM loans WHERE member_id = ?", (member_id,))
         if any_loan:
@@ -236,15 +211,11 @@ class MakerSpaceService:
         return self.get_loan(loan_id)
 
     def get_loan(self, loan_id):
-        row = self.db.fetch_one("SELECT * FROM loans WHERE id = ?",
-                                 (loan_id,))
+        row = self.db.fetch_one("SELECT * FROM loans WHERE id = ?", (loan_id,))
         return self._row_to_loan(row) if row else None
 
     # ================= REPORTS =================
     # Each report returns a list of sqlite3.Row objects that already
-    # join member/equipment names in, so main.py can just print them
-    # without extra lookups.
-
     def report_currently_borrowed(self):
         return self.db.fetch_all("""
             SELECT loans.id AS loan_id, members.name AS member_name,
