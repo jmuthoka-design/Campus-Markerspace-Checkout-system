@@ -1,14 +1,9 @@
 """
 validators.py
 --------------
-Small, single-purpose functions that check whether a piece of user
-input is valid, and explain *why* when it isn't.
-
-Every function here either:
-  - returns the cleaned-up value (whitespace trimmed), or
-  - raises ValueError with a message that's safe to print directly to
-    the user.
-main.py calls these while it's still asking the question (so it can
+single-purpose functions that check whether a piece of user
+input is valid, and when it isn't.
+main.py calls these functions while it's still asking the question (so it can
 re-prompt immediately). 
 """
 
