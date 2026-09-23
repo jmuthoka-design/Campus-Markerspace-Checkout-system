@@ -67,7 +67,7 @@ class Loan:
 
     def is_overdue(self):
         """A loan is overdue if it's still active and today is past
-        the due date. A returned loan is never overdue -- it's done.
+        the due date. A returned loan is never overdue  it's done.
         """
         if self.status != "active":
             return False
@@ -82,6 +82,6 @@ class Loan:
 
     def __str__(self):
         flag = "  ** OVERDUE **" if self.is_overdue() else ""
-        return (f"Loan #{self.id} | member {self.member_id} -> "
+        return (f"Loan #{self.id} | member {self.member_id} - "
                 f"equipment {self.equipment_id} | due {self.due_date} "
                 f"| {self.status}{flag}")
