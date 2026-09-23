@@ -112,7 +112,7 @@ def do_search_members(service):
 def do_register_equipment(service):
     print("\n-- Register New Equipment --")
     name = prompt_valid("Equipment name", validate_equipment_text,field_label="Equipment name")
-    category = prompt_valid("Category"),validate_equipment_text, field_label="Category")
+    category = prompt_valid("Category",validate_equipment_text, field_label="Category")
     item = service.register_equipment(name, category)
     print(f"Registered: {item}")
 
