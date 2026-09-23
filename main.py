@@ -280,9 +280,9 @@ def main():
             
             try:
                 action(service)
-                except ValueError as e:
+            except ValueError as e:
                 print(f"\nCouldn't do that: {e}")
-                except Exception as e:
+            except Exception as e:
                 print(f"\nSomething unexpected went wrong: {e}")
 
        
