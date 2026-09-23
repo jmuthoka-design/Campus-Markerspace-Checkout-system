@@ -240,7 +240,7 @@ MENU = """
   14. Overdue loans
   15. Member loan history
 
-  16. Exit
+  0. Exit
 =========================================================
 """
 
