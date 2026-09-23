@@ -63,7 +63,7 @@ def do_register_member(service):
     print("\n-- Register New Member --")
     name = prompt_valid("Full name", validate_person_name,field_label="Name")
     email = prompt_valid("Email", validate_email)
-    phone = prompt_valid("Phone number (e.g. 57123456 or +230-57-123-456 , ""leave blank to skip)", validate_phone, allow_blank=True)
+    phone = prompt_valid("Phone number", validate_phone, allow_blank=True)
     member = service.register_member(name, email, phone)
     print(f"Registered: {member}")
 
