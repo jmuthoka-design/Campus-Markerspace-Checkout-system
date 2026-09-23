@@ -26,7 +26,7 @@ def prompt_text(label, allow_blank=False):
         value = input(f"{label}: ").strip()
         if value or allow_blank:
             return value
-        print("  -> This can't be blank. Please try again.")
+        print(" This can't be blank. Please try again.")
 
 
 def prompt_valid(label, validator, skip_if_blank=False, **validator_kwargs):
@@ -112,7 +112,7 @@ def do_search_members(service):
 def do_register_equipment(service):
     print("\n-- Register New Equipment --")
     name = prompt_valid("Equipment name", validate_equipment_text,field_label="Equipment name")
-    category = prompt_valid("Category (e.g. 3D Printing, Electronics)",validate_equipment_text, field_label="Category")
+    category = prompt_valid("Category"),validate_equipment_text, field_label="Category")
     item = service.register_equipment(name, category)
     print(f"Registered: {item}")
 
