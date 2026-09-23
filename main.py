@@ -48,7 +48,7 @@ def prompt_int(label):
         try:
             return int(raw)
         except ValueError:
-            print(f"  -> '{raw}' isn't a whole number. Please try again.")
+            print(f"'{raw}' isn't a whole number. Please try again.")
 
 
 # ---------------------------------------------------------------
@@ -242,7 +242,7 @@ MENU = """
   14. Overdue loans
   15. Member loan history
 
-  0. Exit
+  16. Exit
 =========================================================
 """
 
