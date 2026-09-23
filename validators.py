@@ -1,16 +1,16 @@
 """
 validators.py
 --------------
-single-purpose functions that check whether a piece of user
-input is valid, and when it isn't.
-main.py calls these functions while it's still asking the question (so it can
-re-prompt immediately). 
+contains functions that validate the user's or operator of this program's input
 """
 
 import re
 
 # A person's name: must start with a letter, and after that can only
-# contain letters, spaces, hyphens, apostrophes and periods. 
+# contain letters, spaces, hyphens, apostrophes and periods. This covers
+# real names like "Jean-Paul", "O'Brien", "Dr. Amara Diallo" -- but
+# rejects digits and other symbols, since a person's name shouldn't
+# contain either.
 _PERSON_NAME_RE = re.compile(r"^[A-Za-z][A-Za-z'\-. ]{1,49}$")
 
 # An equipment name or category: CAN include digits, because real
@@ -21,13 +21,26 @@ _PERSON_NAME_RE = re.compile(r"^[A-Za-z][A-Za-z'\-. ]{1,49}$")
 _EQUIPMENT_TEXT_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9'\-./() ]{1,59}$")
 
 # Email: allows letters AND digits mixed together on both sides of the
-# @ (e.g"jemima98@example.com" is valid)this is a simple, readable
+# @ (e.g. "jemima98@example.com" is valid) -- this is a simple, readable
+# check, not a full RFC 5322 validator, but it catches the obvious
+# mistakes (no @, no domain, spaces inside the address).
 _EMAIL_RE = re.compile(r"^[^\s@]+@[^\s@]+\.[^\s@]+$")
 
-# Phone number: digits only. No +,-, spaces, or parentheses just
-# whole numbers, 7 to 15 digits long (covers everything from a short
-# local number to a full international one).
-_PHONE_RE = re.compile(r"^[0-9]{7,15}$")
+# Phone number: digits, with an OPTIONAL leading + (international
+# numbers start with one, e.g. "+230...") and OPTIONAL dashes between
+# groups of digits (e.g. "57-123-456"). Both are entirely optional --
+# "57123456", "+23057123456", "57-123-456", and "+230-57-123-456" are
+# all valid. What's not allowed: a dash with no digit before or after
+# it, spaces, parentheses, or a + anywhere except right at the start.
+_PHONE_RE = re.compile(r"^\+?[0-9]+(?:-[0-9]+)*$")
+
+# The above only checks the SHAPE (where + and - are allowed to
+# sit). Separately, once the + and - are stripped out, there still
+# need to be a realistic number of actual digits -- 7 to 15 of them,
+# covering everything from a short local number to a full
+# international one.
+_PHONE_DIGIT_COUNT_MIN = 7
+_PHONE_DIGIT_COUNT_MAX = 15
 
 
 def validate_person_name(raw, field_label="Name"):
@@ -37,8 +50,8 @@ def validate_person_name(raw, field_label="Name"):
     if not _PERSON_NAME_RE.match(value):
         raise ValueError(
             f"{field_label} should only contain letters, spaces, "
-            f"hyphens or apostrophes "
-            f"no numbers or other symbols.")
+            f"hyphens or apostrophes (e.g. 'Jean-Paul' or \"O'Brien\") "
+            f"-- no numbers or other symbols.")
     return value
 
 
@@ -65,7 +78,7 @@ def validate_email(raw):
     if not _EMAIL_RE.match(value):
         raise ValueError(
             "That doesn't look like a valid email (expected something "
-            "like name123@example.com ,letters and numbers are both "
+            "like name123@example.com -- letters and numbers are both "
             "fine).")
     return value
 
@@ -73,8 +86,24 @@ def validate_email(raw):
 def validate_phone(raw, allow_blank=True):
     value = raw.strip()
     if not value:
+        if allow_blank:
+            return ""
         raise ValueError("Phone number can't be blank.")
+
     if not _PHONE_RE.match(value):
         raise ValueError(
-            "Phone number should contain digits only")
+            "Phone number should be digits only, with an optional "
+            "leading + and optional dashes between groups -- e.g. "
+            "57123456, +23057123456, or +230-57-123-456 are all fine, "
+            "but no spaces or parentheses.")
+
+    # Strip the + and - out and count what's left  that's the actual
+    # number of digits someone typed, regardless of how they grouped them.
+    digits_only = value.replace("+", "").replace("-", "")
+    if not (_PHONE_DIGIT_COUNT_MIN <= len(digits_only) <= _PHONE_DIGIT_COUNT_MAX):
+        raise ValueError(
+            f"Phone number should have {_PHONE_DIGIT_COUNT_MIN}-"
+            f"{_PHONE_DIGIT_COUNT_MAX} digits in total (not counting "
+            f"+ or -) -- '{value}' has {len(digits_only)}.")
+
     return value
