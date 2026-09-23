@@ -282,12 +282,12 @@ def main():
             continue
 
         
-        try:
-            action(service)
-        except ValueError as e:
-            print(f"\nCouldn't do that: {e}")
-        except Exception as e:
-            print(f"\nSomething unexpected went wrong: {e}")
+            try:
+                action(service)
+            except ValueError as e:
+                print(f"\nCouldn't do that: {e}")
+            except Exception as e:
+                print(f"\nSomething unexpected went wrong: {e}")
 
         .
         print()
