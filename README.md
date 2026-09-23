@@ -91,7 +91,7 @@ to travel through the whole form before it's caught:
 | Member name | Letters, spaces, hyphens, and apostrophes only (e.g. `Jean-Paul`, `O'Brien`) -- no digits or other symbols |
 | Equipment name / category | Letters, digits, spaces, and basic punctuation (e.g. `Canon EOS M50`, `3D Printing`) -- must contain at least one letter |
 | Email | Standard `name@domain.tld` shape -- letters and digits both allowed |
-| Phone | Digits only, 7-15 of them -- no spaces, dashes, or parentheses; optional at registration |
+| Phone | 7-15 digits, with an optional leading `+` and optional dashes between groups (e.g. `57123456`, `+23057123456`, `+230-57-123-456`) -- no spaces or parentheses; **required** at registration |
 
 ## Validation and error handling
 
@@ -99,17 +99,14 @@ Every action that could go wrong (unknown member/equipment ID, already
 borrowed item, blank or malformed field, deleting a member/equipment
 that still has loan history, non-numeric ID input) raises a clear
 error message instead of crashing. `main.py` catches these and prints
-them, then returns straight to the menu -- no "press Enter to
+them, then returns straight to the menu  no "press Enter to
 continue" needed.
 
-## Use of Generative AI
+## Usage of  AI
 
-<!-- Fill this in honestly before submitting -- see note below. -->
-I used [tool name, e.g. Claude] while building this project for:
-- [ ] Discussing the overall class/table design before I started coding
-- [ ] Explaining SQLite concepts (foreign keys, parameterised queries)
-- [ ] Debugging a specific error I ran into: ______________________
-- [ ] Reviewing/organising code structure and comments
+I used [Claude] while building this project for:
+- Discussing the overall class/table design before I started coding
+- Explaining SQLite concepts (foreign keys, parameterised queries)
+- Reviewing/organising code structure and comments
 
-I wrote/adapted the final code myself and can explain every file in
-the live demo.
+I wrote/adapted the final code myself
